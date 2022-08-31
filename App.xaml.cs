@@ -33,50 +33,22 @@ namespace PrimeCalculator
 
             window.clearPrimes();
 
-            if (fromNr != null && toNr != null && toNr >= fromNr)
+            if (fromNr != null && toNr != null && toNr >= fromNr && fromNr >= 0 && toNr >= 0)
             {
                 this.window.CalculationEnabled = false;
                 this.calculating = true;
-                //this.setCalculating(true);
-
-
-                /*
-                for (int i = (int)fromNr; i <= toNr && this.calculating; i++)
-                //if (await Task.Run(() => isPrime(i)))
-                {
-                    await Task.Delay(1000);
-                    window.addPrime(i);
-                }
-
-                window.CalculationEnabled = true;
-                this.calculating = false;
-                */
-
-                /*
-                List<int> factors;
-                for (int i = (int)fromNr; i <= toNr && this.calculating; i++)
-                {
-                    int toPass = i;
-                    factors = await Task.Run(() => calculateFactors(toPass));                    
-                    window.addFactors(i, factors);
-                }
-                
-                window.CalculationEnabled = true;
-                this.calculating = false;
-                */
-
-                /*
-                Thread t = new Thread(() => this.calcAndPrintPrimes((int)fromNr,(int)toNr,canceller.Token));
-                t.Start(); 
-                */
+               
                 Task.Run(() => this.calcAndPrintFactors((int)fromNr, (int)toNr));
-
-
 
             }
         }
 
-        public void calcAndPrintFactors(int fromNr, int toNr)
+        public void stopButtonClicked()
+        {
+            this.calculating = false;
+        }
+
+        private void calcAndPrintFactors(int fromNr, int toNr)
         {
 
             
@@ -85,21 +57,17 @@ namespace PrimeCalculator
             {
                 List<int> factors = calculateFactors(i);
                 int toPass = i;
-                Dispatcher.Invoke(()=>window.addFactors(toPass, factors), DispatcherPriority.Background);             
+                Dispatcher.Invoke(()=>window.addFactors(toPass, factors), DispatcherPriority.Background);      //Invoke e non BeginInvoke è quello che mi limita e mi permette di stoppare       
             }
            
                 
             Dispatcher.Invoke(() => window.CalculationEnabled = true, DispatcherPriority.Background);
             this.calculating = false;
-        }
-       
+        }     
 
-        public void stopButtonClicked()
-        {
-            this.calculating = false;
-        }
+       
         
-        private bool isPrime(int n)
+        private static bool isPrime(int n)
         {
             if (n == 2 || n == 3)
                 return true;
@@ -116,7 +84,7 @@ namespace PrimeCalculator
             return true;          
         }
 
-        private List<int> calculateFactors(int number)
+        private static List<int> calculateFactors(int number)
         {
             List<int> primes = new List<int>();
 

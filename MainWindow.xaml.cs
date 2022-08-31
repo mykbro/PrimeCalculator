@@ -20,7 +20,7 @@ namespace PrimeCalculator
     /// </summary>
     public partial class MainWindow : Window
     {
-        private App primeCalculator;
+        private readonly App primeCalculator;
 
         public MainWindow(App app)
         {
@@ -33,8 +33,10 @@ namespace PrimeCalculator
             get
             {
                 int toReturn;
-                Int32.TryParse(this.fromTextBox.Text, out toReturn);
-                return toReturn;
+                if (Int32.TryParse(this.fromTextBox.Text, out toReturn))
+                    return toReturn;
+                else
+                    return null;
             }
         }
 
@@ -43,8 +45,10 @@ namespace PrimeCalculator
             get
             {
                 int toReturn;
-                Int32.TryParse(this.toTextBox.Text, out toReturn);
-                return toReturn;
+                if (Int32.TryParse(this.toTextBox.Text, out toReturn))
+                    return toReturn;
+                else
+                    return null;
             }
         }
 
