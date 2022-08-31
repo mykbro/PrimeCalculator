@@ -16,14 +16,9 @@ namespace PrimeCalculator
     public partial class App : Application
     {
         private MainWindow window;
-        private bool calculating;
-       /*
-        private bool Calculating
-        {
-            get=> Volatile.Read(ref calculating);
-            set => Volatile.Write(ref calculating, value);
-        }
-       */
+        private bool calculating;       
+
+       
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             this.window = new MainWindow(this);
@@ -74,25 +69,43 @@ namespace PrimeCalculator
                 Thread t = new Thread(() => this.calcAndPrintPrimes((int)fromNr,(int)toNr,canceller.Token));
                 t.Start(); 
                 */
-                Task.Run(() => this.calcAndPrintPrimes((int)fromNr, (int)toNr));
+                Task.Run(() => this.calcAndPrintFactors((int)fromNr, (int)toNr));
 
 
 
             }
         }
 
-        public void calcAndPrintPrimes(int fromNr, int toNr)
-        {      
-
-            for (int i = fromNr; i <= toNr && this.calculating; i++)
+        public void calcAndPrintFactors(int fromNr, int toNr)
+        {
+            List<Task> taskList = new List<Task>();
+            int i;
+            for (i = fromNr; i <= toNr && this.calculating; i++)
             {
+                /*
                 List<int> factors = calculateFactors(i);
                 int toPass = i;
                 Dispatcher.Invoke(()=>window.addFactors(toPass, factors), DispatcherPriority.Background);                
+                */
+                
+                
+                int toPass = i;
+                taskList.Add(Task.Run(() => this.calcAndPrintSingleNumFactor(toPass)));              
+                
             }
-
+           
+            Task.WaitAll(taskList.ToArray());            
             Dispatcher.Invoke(() => window.CalculationEnabled = true, DispatcherPriority.Background);
             this.calculating = false;
+        }
+
+        public void calcAndPrintSingleNumFactor(int num)
+        {
+            if (this.calculating)
+            {
+                List<int> factors = calculateFactors(num);
+                Dispatcher.Invoke(() => window.addFactors(num, factors), DispatcherPriority.Background);
+            }
         }
 
         public void stopButtonClicked()
