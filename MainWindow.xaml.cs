@@ -23,9 +23,9 @@ namespace PrimeCalculator
         private App primeCalculator;
 
         public MainWindow(App app)
-        {            
-            InitializeComponent();
+        {
             this.primeCalculator = app;
+            InitializeComponent();            
         }
 
         public int? From

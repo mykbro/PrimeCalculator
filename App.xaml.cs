@@ -78,35 +78,21 @@ namespace PrimeCalculator
 
         public void calcAndPrintFactors(int fromNr, int toNr)
         {
-            List<Task> taskList = new List<Task>();
+
+            
             int i;
             for (i = fromNr; i <= toNr && this.calculating; i++)
             {
-                /*
                 List<int> factors = calculateFactors(i);
                 int toPass = i;
-                Dispatcher.Invoke(()=>window.addFactors(toPass, factors), DispatcherPriority.Background);                
-                */
-                
-                
-                int toPass = i;
-                taskList.Add(Task.Run(() => this.calcAndPrintSingleNumFactor(toPass)));              
-                
+                Dispatcher.Invoke(()=>window.addFactors(toPass, factors), DispatcherPriority.Background);             
             }
            
-            Task.WaitAll(taskList.ToArray());            
+                
             Dispatcher.Invoke(() => window.CalculationEnabled = true, DispatcherPriority.Background);
             this.calculating = false;
         }
-
-        public void calcAndPrintSingleNumFactor(int num)
-        {
-            if (this.calculating)
-            {
-                List<int> factors = calculateFactors(num);
-                Dispatcher.Invoke(() => window.addFactors(num, factors), DispatcherPriority.Background);
-            }
-        }
+       
 
         public void stopButtonClicked()
         {
