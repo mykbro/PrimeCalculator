@@ -1,0 +1,45 @@
+﻿<Window x:Class="PrimeCalculator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"      
+        mc:Ignorable="d"
+        Title="Prime Calculator" Background="Azure" MinHeight="250" MinWidth="150" SizeToContent="WidthAndHeight" >
+    <Window.Resources>
+        <Style x:Key="GreatStyle">            
+            <Setter Property="Control.Margin" Value="3"></Setter>
+        </Style>
+    </Window.Resources>
+    
+    <Grid Style="{StaticResource GreatStyle}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>            
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>          
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Label Style="{StaticResource GreatStyle}" Grid.Row="0" Grid.Column="0">From:</Label>
+        <TextBox Name="fromTextBox" Style="{StaticResource GreatStyle}" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"></TextBox>
+
+        <Label Style="{StaticResource GreatStyle}" Grid.Row="1" Grid.Column="0">To:</Label>
+        <TextBox Name="toTextBox" Style="{StaticResource GreatStyle}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"></TextBox>
+
+        <Button Name="calcButton" Style="{StaticResource GreatStyle}" Padding="5" Grid.Row="2" Grid.Column="0" Click="calcButton_Click">Calculate</Button>
+        <Button Name="stopButton" Style="{StaticResource GreatStyle}" Padding="5" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" IsEnabled="False" Click="stopButton_Click">Stop</Button>
+
+        <ListBox  Name="primeListBox" Style="{StaticResource GreatStyle}" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
+            
+        </ListBox>
+      
+
+
+    </Grid>
+</Window>
+
