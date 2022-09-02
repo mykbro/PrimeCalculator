@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,13 +21,17 @@ namespace PrimeCalculator
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly App primeCalculator;
+        //private readonly App primeCalculator;
 
-        public MainWindow(App app)
-        {
-            this.primeCalculator = app;
+        public MainWindow()
+        {            
             InitializeComponent();            
         }
+
+        //<Events>
+        public event EventHandler<EventArgs> CalcButtonClick;
+        public event EventHandler<EventArgs> StopButtonClick;
+        //</Events>
 
         public int? From
         {
@@ -84,18 +89,23 @@ namespace PrimeCalculator
         }
 
 
+        
         //////////////////////////////////////////////////
 
-       
 
         private void calcButton_Click(object sender, RoutedEventArgs e)
         {
-            primeCalculator.calcButtonClicked();
+            if (CalcButtonClick != null)
+                CalcButtonClick(this, EventArgs.Empty);
         }       
 
         private void stopButton_Click(object sender, RoutedEventArgs e)
         {
-            primeCalculator.stopButtonClicked();
-        }
+            if (StopButtonClick != null)
+                StopButtonClick(this, EventArgs.Empty);
+        }       
+
+
+
     }
 }
