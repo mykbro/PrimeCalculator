@@ -88,8 +88,13 @@ namespace PrimeCalculator
             this.primeListBox.Items.Clear();
         }
 
+        public void updateTimeElapsed(long ms)
+        {
+            this.stopWatchLabel.Content = ms;
+        }
 
-        
+
+
         //////////////////////////////////////////////////
 
 

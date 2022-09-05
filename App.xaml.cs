@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
+using System.Diagnostics;
 
 namespace PrimeCalculator
 {
@@ -15,15 +16,15 @@ namespace PrimeCalculator
     /// </summary>
     public partial class App : Application
     {
-        private MainWindow window;
-        private bool calculating;       
+        private readonly MainWindow window = new MainWindow();           
+        private readonly Stopwatch timer = new Stopwatch();
+        private bool calculating;
 
-       
+
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             this.calculating = false;
-
-            this.window = new MainWindow();
+           
             this.window.CalcButtonClick += onCalcButtonClick;
             this.window.StopButtonClick += onStopButtonClick;
             this.window.Closed += onWindowClose;
@@ -41,10 +42,12 @@ namespace PrimeCalculator
             int? toNr = window.To;
 
             window.clearPrimes();
-           
+            timer.Reset();
+            window.updateTimeElapsed(timer.ElapsedMilliseconds);
 
             if (fromNr != null && toNr != null && toNr >= fromNr && fromNr >= 0 && toNr >= 0)
-            {
+            {                
+                timer.Start();                
                 this.window.CalculationEnabled = false;
                 this.calculating = true;
                
@@ -74,10 +77,12 @@ namespace PrimeCalculator
                 int toPass = i;
                 Dispatcher.Invoke(() => this.window.addFactors(toPass, factors), DispatcherPriority.Background);      //Invoke e non BeginInvoke è quello che mi limita e mi permette di stoppare right on time_
                                                                                                                       //_altrimenti tutte le chiamate vengono fatte e incodate al Dispatcher.     
+                Dispatcher.Invoke(() => this.window.updateTimeElapsed(timer.ElapsedMilliseconds), DispatcherPriority.Background);
             }
            
                 
             Dispatcher.Invoke(() => this.window.CalculationEnabled = true, DispatcherPriority.Background);
+            Dispatcher.Invoke(() => this.window.updateTimeElapsed(timer.ElapsedMilliseconds), DispatcherPriority.Background);
             this.calculating = false;
         }     
 
