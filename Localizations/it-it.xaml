@@ -1,0 +1,9 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <sys:String x:Key="calcButtText">Calcola</sys:String>
+    <sys:String x:Key="stopButtText">Ferma</sys:String>
+    <sys:String x:Key="switchLangButtText">Cambia lingua</sys:String>
+    <sys:String x:Key="fromLabelText">Da:</sys:String>
+    <sys:String x:Key="toLabelText">A:</sys:String>
+</ResourceDictionary>

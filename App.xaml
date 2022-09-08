@@ -4,6 +4,13 @@
              xmlns:local="clr-namespace:PrimeCalculator"              
              Startup="Application_Startup" Exit="Application_Exit">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Localizations/en-us.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="GreatStyle">
+                <Setter Property="Control.Margin" Value="3"></Setter>
+            </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

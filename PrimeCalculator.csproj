@@ -8,7 +8,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    
+    <Page Remove="Localizations\en-us.xaml" />
+    <Page Remove="Localizations\it-it.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Localizations\en-us.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Localizations\it-it.xaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

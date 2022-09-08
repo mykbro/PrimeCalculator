@@ -31,6 +31,7 @@ namespace PrimeCalculator
         //<Events>
         public event EventHandler<EventArgs> CalcButtonClick;
         public event EventHandler<EventArgs> StopButtonClick;
+        public event EventHandler<EventArgs> SwitchLangButtonClick;
         //</Events>
 
         public int? From
@@ -102,15 +103,20 @@ namespace PrimeCalculator
         {
             if (CalcButtonClick != null)
                 CalcButtonClick(this, EventArgs.Empty);
+            //this.Resources["calcButtText"] = "Troia";
         }       
 
         private void stopButton_Click(object sender, RoutedEventArgs e)
         {
             if (StopButtonClick != null)
                 StopButtonClick(this, EventArgs.Empty);
-        }       
+            //this.Resources["calcButtText"] = "Apposto";
+        }
 
-
-
+        private void switchLangButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (SwitchLangButtonClick != null)
+                SwitchLangButtonClick(this, EventArgs.Empty);
+        }
     }
 }

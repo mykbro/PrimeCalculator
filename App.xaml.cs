@@ -8,28 +8,61 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using System.Diagnostics;
+using System.IO;
+using System.Collections.ObjectModel;
 
 namespace PrimeCalculator
-{
+{    
+
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application
     {
-        private readonly MainWindow window = new MainWindow();           
-        private readonly Stopwatch timer = new Stopwatch();
-        private bool calculating;
+        private MainWindow window;           
+        private readonly Stopwatch timer = new Stopwatch();       
+        private bool calculating;       
+        private string currentCulture;
 
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            this.calculating = false;
-           
+            this.calculating = false;           
+
+            StreamReader tx = null;
+            try
+            {  
+                tx = new StreamReader("config.txt");
+                String temp = tx.ReadLine();
+                
+                if (temp == null)
+                    currentCulture = "en-us";
+                else
+                    currentCulture = temp;
+            }
+            catch
+            {
+                currentCulture = "en-us";   
+            }
+            finally
+            {
+                if(tx != null)
+                    tx.Close();
+            }
+
+            if(currentCulture != "en-us") 
+                this.tryToSetLanguage(currentCulture);
+               
+            
+
+            this.window = new MainWindow();
             this.window.CalcButtonClick += onCalcButtonClick;
             this.window.StopButtonClick += onStopButtonClick;
             this.window.Closed += onWindowClose;
+            this.window.SwitchLangButtonClick += onSwitchLangButtonClick;
             this.window.Show();
         }
+       
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
@@ -64,6 +97,28 @@ namespace PrimeCalculator
         private void onWindowClose(object sender, EventArgs e)
         {
 
+        }
+
+        private void onSwitchLangButtonClick(object sender, EventArgs e)
+        {            
+            if (currentCulture == "en-us")
+                    this.tryToSetLanguage("it-it");
+                else
+                    this.tryToSetLanguage("en-us");
+        }        
+
+        private void tryToSetLanguage(string cultureToSet)
+        {
+            try
+            {
+                String uriString = "/PrimeCalculator;component/Localizations/" + cultureToSet + ".xaml";
+                ResourceDictionary dictToAdd = new ResourceDictionary() { Source = new Uri(uriString, UriKind.Relative) };
+                window.Resources.MergedDictionaries.Clear();
+                window.Resources.MergedDictionaries.Add(dictToAdd);
+
+                this.currentCulture = cultureToSet;
+            }
+            catch { }
         }
 
         private void calcAndPrintFactors(int fromNr, int toNr)
