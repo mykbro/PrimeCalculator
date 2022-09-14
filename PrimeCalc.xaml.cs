@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,17 +16,13 @@ using System.Windows.Shapes;
 namespace PrimeCalculator
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Logica di interazione per PrimeCalc.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class PrimeCalc : UserControl
     {
-        //private readonly App primeCalculator;
-        private readonly PrimeCalc primeCalcControl;
-
-        public MainWindow()
-        {            
+        public PrimeCalc()
+        {
             InitializeComponent();
-            this.primeCalcControl = (PrimeCalc) this.FindResource("defaultControl");
         }
 
         //<Events>
@@ -40,7 +35,11 @@ namespace PrimeCalculator
         {
             get
             {
-                return primeCalcControl.From;
+                int toReturn;
+                if (Int32.TryParse(this.fromTextBox.Text, out toReturn))
+                    return toReturn;
+                else
+                    return null;
             }
         }
 
@@ -48,7 +47,11 @@ namespace PrimeCalculator
         {
             get
             {
-                return primeCalcControl.To;
+                int toReturn;
+                if (Int32.TryParse(this.toTextBox.Text, out toReturn))
+                    return toReturn;
+                else
+                    return null;
             }
         }
 
@@ -56,55 +59,56 @@ namespace PrimeCalculator
         {
             set
             {
-                primeCalcControl.CalculationEnabled = value;
+                this.calcButton.IsEnabled = value;
+                this.stopButton.IsEnabled = !value;
             }
         }
 
         public void addPrime(int p)
         {
-            primeCalcControl.addPrime(p);
+            this.primeListBox.Items.Add(p);
+            this.primeListBox.Items.MoveCurrentToLast();
+            this.primeListBox.ScrollIntoView(this.primeListBox.Items.CurrentItem);
         }
 
         public void addFactors(int num, List<int> factors)
         {
-           primeCalcControl.addFactors(num, factors);
+            StringBuilder toAdd = new StringBuilder(num + " => ");
+            foreach (int factor in factors)
+                toAdd.Append(factor + " ");
+            this.primeListBox.Items.Add(toAdd);
+            this.primeListBox.Items.MoveCurrentToLast();
+            this.primeListBox.ScrollIntoView(this.primeListBox.Items.CurrentItem);
         }
 
         public void clearPrimes()
         {
-            primeCalcControl.clearPrimes();
+            this.primeListBox.Items.Clear();
         }
 
         public void updateTimeElapsed(long ms)
         {
-            primeCalcControl.updateTimeElapsed(ms);
+            this.stopWatchLabel.Content = ms;
         }
 
-
-
-        //////////////////////////////////////////////////
-
-        private void PrimeCalc_CalcButtonClick(object sender, EventArgs e)
+        private void calcButton_Click(object sender, RoutedEventArgs e)
         {
             if (CalcButtonClick != null)
                 CalcButtonClick(this, EventArgs.Empty);
+            //this.Resources["calcButtText"] = "Troia";
         }
 
-        private void PrimeCalc_StopButtonClick(object sender, EventArgs e)
+        private void stopButton_Click(object sender, RoutedEventArgs e)
         {
             if (StopButtonClick != null)
                 StopButtonClick(this, EventArgs.Empty);
+            //this.Resources["calcButtText"] = "Apposto";
         }
 
-        private void PrimeCalc_SwitchLangButtonClick(object sender, EventArgs e)
+        private void switchLangButton_Click(object sender, RoutedEventArgs e)
         {
             if (SwitchLangButtonClick != null)
                 SwitchLangButtonClick(this, EventArgs.Empty);
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            this.Content = primeCalcControl;
         }
     }
 }
