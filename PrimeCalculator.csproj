@@ -8,11 +8,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Imgs\X.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Page Remove="Localizations\en-us.xaml" />
     <Page Remove="Localizations\it-it.xaml" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Imgs\X.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Localizations\en-us.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>

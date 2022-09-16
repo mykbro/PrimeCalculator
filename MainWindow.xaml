@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:sys="clr-namespace:System;assembly=mscorlib"      
+        xmlns:sys="clr-namespace:System;assembly=mscorlib" 
+        xmlns:loc="clr-namespace:PrimeCalculator"
         mc:Ignorable="d"
         Title="Prime Calculator" Background="Azure" MinHeight="250" MinWidth="150" SizeToContent="WidthAndHeight" >
     <Window.Resources>
@@ -19,6 +20,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -54,6 +56,7 @@
             <DynamicResource ResourceKey="switchLangButtText"></DynamicResource>
         </Button>
 
+        <!--<loc:ValidatedTextBox Grid.Row="5" Grid.ColumnSpan="4"></loc:ValidatedTextBox>-->
 
     </Grid>
 </Window>

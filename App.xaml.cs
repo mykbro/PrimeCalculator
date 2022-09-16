@@ -18,17 +18,17 @@ namespace PrimeCalculator
     /// Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application
-    {
+    {       
         private MainWindow window;           
         private readonly Stopwatch timer = new Stopwatch();       
-        private bool calculating;       
+        private volatile bool _calculating;       
         private string currentCulture;
 
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            this.calculating = false;           
-
+            _calculating = false;
+           
             StreamReader tx = null;
             try
             {  
@@ -69,7 +69,7 @@ namespace PrimeCalculator
 
         }
 
-        private void onCalcButtonClick(object sender, EventArgs e)
+        private async void onCalcButtonClick(object sender, EventArgs e)
         {
             int? fromNr = window.From;
             int? toNr = window.To;
@@ -82,16 +82,19 @@ namespace PrimeCalculator
             {                
                 timer.Start();                
                 this.window.CalculationEnabled = false;
-                this.calculating = true;
-               
-                Task.Run(() => this.calcAndPrintFactors((int)fromNr, (int)toNr));
+                _calculating = true;             
+                
+                await calcAndPrintFactorsAsync((int)fromNr, (int)toNr);
 
+                _calculating = false;
+                this.window.CalculationEnabled = true;
+                timer.Stop();                
             }
         }
 
         private void onStopButtonClick(object sender, EventArgs e)
         {
-            this.calculating = false;
+            _calculating = false;
         }
 
         private void onWindowClose(object sender, EventArgs e)
@@ -121,28 +124,48 @@ namespace PrimeCalculator
             catch { }
         }
 
-        private void calcAndPrintFactors(int fromNr, int toNr)
-        {
+        private async Task calcAndPrintFactorsAsync(int fromNr, int toNr)
+        {            
+            Task<List<int>>[] factorizationTasks = new Task<List<int>>[toNr - fromNr + 1];     
+            SemaphoreSlim sem = new SemaphoreSlim(0);       //used to ensure that printFactorsTask does not overspeed calcFactorsTask reading 'null' cells
 
-            
-            int i;
-            for (i = fromNr; i <= toNr && this.calculating; i++)
+            //We need to spawn a new Task for calculating the factorization because creating a huge nr of Factorization Task would hang the UI
+            //We also need to parallelize the printing process because if we spawn a lot of Task we would wait a lot before the first number appears
+            Task calcFactorsTask = Task.Run(() => calcFactors(factorizationTasks, sem, fromNr));
+            Task printFactorsTask = Task.Run(() => printFactors(factorizationTasks, sem, fromNr));
+
+            await Task.WhenAll(calcFactorsTask, printFactorsTask);
+        }
+
+        private void calcFactors(Task<List<int>>[] factorizationTasks, SemaphoreSlim sem, int fromNr)
+        {
+            for (int i = 0, numToFactorize = fromNr; i < factorizationTasks.Length && _calculating; i++, numToFactorize++)
             {
-                List<int> factors = calculateFactors(i);
-                int toPass = i;
-                Dispatcher.Invoke(() => this.window.addFactors(toPass, factors), DispatcherPriority.Background);      //Invoke e non BeginInvoke è quello che mi limita e mi permette di stoppare right on time_
-                                                                                                                      //_altrimenti tutte le chiamate vengono fatte e incodate al Dispatcher.     
-                Dispatcher.Invoke(() => this.window.updateTimeElapsed(timer.ElapsedMilliseconds), DispatcherPriority.Background);
+                factorizationTasks[i] = calculateFactorsAsync(numToFactorize);
+                sem.Release(); 
+            }
+        }
+
+        private void printFactors(Task<List<int>>[] factorizationTasks, SemaphoreSlim sem, int fromNr)
+        {            
+            for (int i = 0, numToFactorize = fromNr; i < factorizationTasks.Length && _calculating; i++, numToFactorize++)
+            {
+                //SpinWait.SpinUntil(() => factorizationTasks[i] != null);        //not needed with the Sem anymore
+                sem.Wait();
+                List<int> factors = factorizationTasks[i].Result;
+                Dispatcher.Invoke(
+                    () =>
+                    {
+                        this.window.addFactors(numToFactorize, factors);
+                        this.window.updateTimeElapsed(timer.ElapsedMilliseconds);
+                    }, DispatcherPriority.Background);          //Invoke e non BeginInvoke è quello che mi limita e mi permette di stoppare right on time_
+                                                                //_altrimenti tutte le chiamate vengono fatte e incodate al Dispatcher.
+                factorizationTasks[i] = null;                   //we let the Task be Garbage Collected in order to eagerly free resources
             }
            
-                
-            Dispatcher.Invoke(() => this.window.CalculationEnabled = true, DispatcherPriority.Background);
-            Dispatcher.Invoke(() => this.window.updateTimeElapsed(timer.ElapsedMilliseconds), DispatcherPriority.Background);
-            this.calculating = false;
-        }     
+        }
 
-       
-        
+
         private bool isPrime(int n)
         {
             if (n == 2 || n == 3)
@@ -164,7 +187,7 @@ namespace PrimeCalculator
         {
             List<int> primes = new List<int>();
 
-            for (int div = 2; div <= number; div++)
+            for (int div = 2; div <= number && _calculating; div++)
                 while (number % div == 0)
                 {
                     primes.Add(div);
@@ -172,6 +195,11 @@ namespace PrimeCalculator
                 }
 
             return primes;
+        }
+
+        private Task<List<int>> calculateFactorsAsync(int number)
+        {
+            return Task.Run(() => calculateFactors(number));
         }
 
         
